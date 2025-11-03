@@ -1,0 +1,5 @@
+{
+  "name": "Mane Rotti Delivery Helper",
+  "description": "An application to track and manage Mane Rotti deliveries, with an AI-powered route optimization feature.",
+  "requestFramePermissions": []
+}
