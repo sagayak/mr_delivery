@@ -11,7 +11,15 @@ interface OrderCardProps {
 }
 
 const OrderCard: React.FC<OrderCardProps> = ({ order, isSelected, onSelect, onToggleDelivered, onTogglePaid }) => {
-  const cardId = `${order.tower}-${order.floor.padStart(2, '0')}${order.flat}`;
+  const hasFloor = order.floor && !isNaN(parseInt(order.floor, 10));
+
+  const floorPart = hasFloor ? order.floor.padStart(2, '0') : '';
+  const cardId = `${order.tower}-${floorPart}${order.flat}`;
+
+  const displayAddress = hasFloor
+    ? `Tower ${order.tower}, Floor ${order.floor}, Flat ${order.flat}`
+    : `Tower ${order.tower}, Flat ${order.flat}`;
+
 
   // Prevent the card's main onClick from firing when an action button is clicked.
   const handleButtonClick = (e: React.MouseEvent, action: () => void) => {
@@ -30,7 +38,7 @@ const OrderCard: React.FC<OrderCardProps> = ({ order, isSelected, onSelect, onTo
           <h3 className="text-xl font-bold text-cyan-400 tracking-wider">
             {cardId}
           </h3>
-          <p className="text-xs text-slate-400">{order.address}</p>
+          <p className="text-xs text-slate-400">{displayAddress}</p>
         </div>
         <input
           type="checkbox"
