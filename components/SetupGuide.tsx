@@ -1,12 +1,12 @@
 import React from 'react';
-import { RouteIcon } from './icons'; // Re-using RouteIcon as an Info icon
+import { InfoIcon } from './icons';
 
 const SetupGuide: React.FC = () => {
     return (
         <div className="min-h-screen bg-slate-900 text-white flex items-center justify-center p-4">
             <div className="max-w-3xl w-full bg-slate-800 rounded-lg shadow-2xl p-8 border border-cyan-500/30">
                 <div className="flex items-center gap-4 mb-6">
-                    <RouteIcon className="w-10 h-10 text-cyan-400 flex-shrink-0" />
+                    <InfoIcon className="w-10 h-10 text-cyan-400 flex-shrink-0" />
                     <h1 className="text-3xl font-bold text-cyan-400">Action Required: Connect Your Google Sheet</h1>
                 </div>
                 <p className="text-slate-300 text-lg mb-6">

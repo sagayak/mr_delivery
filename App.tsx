@@ -1,10 +1,10 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { Order } from './types';
 import OrderCard from './components/OrderCard';
-import { getOptimizedRoute } from './services/geminiService';
 import { fetchOrders, ConfigurationError } from './services/sheetService';
-import { CheckIcon, CrossIcon, LoadingSpinner, RouteIcon } from './components/icons';
+import { ChartBarIcon, CheckIcon, CrossIcon, LoadingSpinner } from './components/icons';
 import SetupGuide from './components/SetupGuide';
+import Reports from './components/Reports';
 
 const App: React.FC = () => {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -12,9 +12,8 @@ const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isConfigError, setIsConfigError] = useState(false);
-  const [isLoadingRoute, setIsLoadingRoute] = useState(false);
-  const [optimizedRoute, setOptimizedRoute] = useState<string>('');
   const [copiedText, setCopiedText] = useState<string | null>(null);
+  const [showReports, setShowReports] = useState(false);
 
   const loadInitialOrders = useCallback(async () => {
     try {
@@ -82,20 +81,6 @@ const App: React.FC = () => {
 
   const handleBulkMarkDelivered = () => handleBulkUpdate(order => ({ ...order, isDelivered: true }));
   const handleBulkMarkPaid = () => handleBulkUpdate(order => ({ ...order, isPaid: true }));
-
-  const handleOptimizeRoute = useCallback(async () => {
-    setIsLoadingRoute(true);
-    setOptimizedRoute('');
-    try {
-      const route = await getOptimizedRoute(orders);
-      setOptimizedRoute(route);
-    } catch (error) {
-      console.error(error);
-      setOptimizedRoute("Failed to get optimized route.");
-    } finally {
-      setIsLoadingRoute(false);
-    }
-  }, [orders]);
   
   if (isConfigError) {
       return <SetupGuide />;
@@ -207,33 +192,20 @@ const App: React.FC = () => {
           </div>
           <div className="flex items-center gap-2 self-end sm:self-center">
             <button
-              onClick={handleOptimizeRoute}
-              disabled={isLoadingRoute || orders.length === 0}
-              className="flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400/50 disabled:cursor-not-allowed text-white font-bold py-2 px-4 rounded-lg transition-colors duration-300"
+              onClick={() => setShowReports(prev => !prev)}
+              disabled={orders.length === 0}
+              className="flex items-center justify-center gap-2 bg-slate-700 hover:bg-slate-600 disabled:bg-slate-700/50 disabled:cursor-not-allowed text-white font-bold py-2 px-4 rounded-lg transition-colors duration-300"
             >
-              {isLoadingRoute ? <LoadingSpinner className="w-5 h-5"/> : <RouteIcon className="w-5 h-5"/>}
-              <span>Optimize Route</span>
+              <ChartBarIcon className="w-5 h-5"/>
+              <span>{showReports ? 'Hide' : 'Show'} Reports</span>
             </button>
           </div>
         </div>
       </header>
 
       <main className="container mx-auto p-4 pb-28">
-        {(isLoadingRoute || optimizedRoute) && (
-          <section className="mb-6 bg-slate-800 rounded-lg p-4 shadow-lg">
-            <h2 className="text-xl font-semibold mb-2 text-indigo-400">Optimized Delivery Route</h2>
-            {isLoadingRoute && (
-              <div className="flex items-center gap-3 text-slate-300">
-                <LoadingSpinner className="w-6 h-6"/>
-                <p>Generating the most efficient route with Gemini AI...</p>
-              </div>
-            )}
-            {optimizedRoute && (
-              <pre className="text-slate-300 whitespace-pre-wrap font-mono bg-slate-900/50 p-3 rounded-md">{optimizedRoute}</pre>
-            )}
-          </section>
-        )}
-        
+        {showReports && orders.length > 0 && <Reports orders={orders} />}
+
         <section>
           {isLoading ? (
              <div className="text-center py-16 flex flex-col items-center gap-4">
